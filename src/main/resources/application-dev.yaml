@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    dbcp2:
+      validation-query: select 1
+      url: jdbc:mysql://localhost:3306/GYMate
+      test-on-borrow: 'true'
+    password: js102938@
+    username: root
+    url: jdbc:mysql://localhost:3306/GYMate?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+  jpa:
+    hibernate:
+      ddl-auto: update

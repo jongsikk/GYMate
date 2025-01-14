@@ -1,5 +1,6 @@
 package com.jongsik2.training.gymate.domain;
 
+import com.jongsik2.training.gymate.dto.MuscleGroupResponse;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -16,4 +17,12 @@ public class MuscleGroup {
     private BodyType bodyType;
 
     private String name;
+
+    public MuscleGroupResponse toDto() {
+        return MuscleGroupResponse.builder()
+                .id(this.id)
+                .bodyTypeName(this.bodyType.getName())
+                .name(this.name)
+                .build();
+    }
 }

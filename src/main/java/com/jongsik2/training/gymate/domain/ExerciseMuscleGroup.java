@@ -1,5 +1,6 @@
 package com.jongsik2.training.gymate.domain;
 
+import com.jongsik2.training.gymate.dto.ExerciseResponse;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -17,5 +18,13 @@ public class ExerciseMuscleGroup {
 
     @ManyToOne
     @JoinColumn(name = "exercise_id")
-    private Exercise exerciseId;
+    private Exercise exercise;
+
+    public ExerciseResponse toDto() {
+        return ExerciseResponse.builder()
+                .id(exercise.getId())
+                .muscleGroupName(muscleGroup.getName())
+                .name(exercise.getName())
+                .build();
+    }
 }

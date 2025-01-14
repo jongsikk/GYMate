@@ -14,4 +14,6 @@ public class MuscleGroup {
     @ManyToOne
     @JoinColumn(name = "body_type_id")
     private BodyType bodyType;
+
+    private String name;
 }

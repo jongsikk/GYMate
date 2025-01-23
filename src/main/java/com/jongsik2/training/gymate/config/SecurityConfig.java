@@ -21,13 +21,13 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/login", "/signup").permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin((formLogin) ->
                         formLogin
-                                .loginProcessingUrl("/login")
+                                .loginPage("/login")
                                 .defaultSuccessUrl("/")
                 )
         ;

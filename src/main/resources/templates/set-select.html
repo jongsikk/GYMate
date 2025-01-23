@@ -7,10 +7,14 @@
 <body>
 <div class="container mt-5">
     <h2 class="text-center">세트 수 및 쉬는 시간 설정</h2>
-    <form action="/timer" method="post">
+    <form action="/start" method="post">
         <div class="form-group">
             <label for="sets">세트 수:</label>
             <input type="number" class="form-control" id="sets" name="sets" min="1" required>
+        </div>
+        <div class="form-group">
+            <label for="sets">횟수:</label>
+            <input type="number" class="form-control" id="reps" name="reps" min="1" required>
         </div>
         <div class="form-group">
             <label for="restTime">쉬는 시간:</label>

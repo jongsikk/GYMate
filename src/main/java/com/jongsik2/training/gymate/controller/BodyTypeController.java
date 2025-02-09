@@ -3,21 +3,24 @@ package com.jongsik2.training.gymate.controller;
 import com.jongsik2.training.gymate.dto.BodyTypeResponse;
 import com.jongsik2.training.gymate.service.BodyTypeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/body-type")
+@Controller
 @RequiredArgsConstructor
-public class BodyTypeRestController {
+@RequestMapping("/exercise-selection")
+public class BodyTypeController {
     private final BodyTypeService bodyTypeService;
 
-    @GetMapping
-    public ResponseEntity<List<BodyTypeResponse>> getBodyTypeList() {
-        return ResponseEntity.ok(bodyTypeService.getBodyTypeList());
+    @GetMapping("/exercise-selection")
+    public String exerciseSelection(Model model) {
+        List<BodyTypeResponse> bodyTypes = bodyTypeService.getBodyTypeList();
+        model.addAttribute("bodyTypes", bodyTypes);
+
+        return "exercise-select";
     }
 }

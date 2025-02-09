@@ -52,3 +52,12 @@ VALUES (1, 1, 1),   -- 벤치프레스 가슴 운동
        (17, 2, 4),  -- 데드리프트 등 운동
        (18, 2, 18); -- 덤벨 로우 등 운동
 
+INSERT INTO users (email, username, password, role_name, provider, provider_id, created_at, updated_at)
+VALUES ('xxx_@kakao.com',
+        'user',
+        '$2a$10$MDQHb9OlZIVY.I5e53TD5eUvvsV8QyIQt/wWkr9/AANBCzW02TFeC',
+        'USER',
+        NULL,
+        NULL,
+        NOW(),
+        NOW());

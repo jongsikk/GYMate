@@ -17,3 +17,9 @@ spring:
       data-locations: classpath*:data.sql
   profiles:
     include: oauth
+
+jwt:
+  access-secret: YWNjZXNzdG9rZW5zZWNyZXR0b2tlbmFjY2Vzcw==
+  access-expiration: 3600000  # 60 min
+  refresh-expiration: 86400000  # 24 hours
+  issuer: xxx_@kakao.com

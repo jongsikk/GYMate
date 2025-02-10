@@ -82,22 +82,25 @@ public class JwtUtil {
 //        return claims;
 //    }
 
-    public boolean validateToken(String token) {
+    public TokenStatus validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(accessSecret.getBytes())).build().parseClaimsJws(token); // 토큰 파싱하여 유효성 검증
-            return true; // 유효한 토큰일 경우 true 반환
+            return TokenStatus.VALID;
         } catch (SecurityException e) {
             log.warn("Invalid JWT signature: {}", e.getMessage());
+            return TokenStatus.INVALID;
         } catch (MalformedJwtException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
+            return TokenStatus.INVALID;
         } catch (ExpiredJwtException e) {
             log.warn("JWT token is expired: {}", e.getMessage());
+            return TokenStatus.EXPIRED;
         } catch (UnsupportedJwtException e) {
             log.warn("JWT token is unsupported: {}", e.getMessage());
+            return TokenStatus.INVALID;
         } catch (IllegalArgumentException e) {
             log.warn("JWT claims string is empty: {}", e.getMessage());
+            return TokenStatus.INVALID;
         }
-
-        return false;
     }
 }

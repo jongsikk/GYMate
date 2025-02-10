@@ -5,6 +5,7 @@ import com.jongsik2.training.gymate.dto.ExerciseSetting;
 import com.jongsik2.training.gymate.dto.LoginRequest;
 import com.jongsik2.training.gymate.dto.SignUpRequest;
 import com.jongsik2.training.gymate.security.JwtUtil;
+import com.jongsik2.training.gymate.security.RefreshTokenService;
 import com.jongsik2.training.gymate.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PageController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
 
     @GetMapping("/")
@@ -50,9 +52,13 @@ public class PageController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
+            String accessToken = jwtUtil.generateAccessToken(loginRequest.getEmail());
+            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getEmail());
 
-            addCookie(response, "access_token", jwtUtil.generateAccessToken(loginRequest.getEmail()), 60 * 30); // 30분 유지
-            addCookie(response, "refresh_token", jwtUtil.generateRefreshToken(loginRequest.getEmail()), 60 * 60 * 24); // 7일 유지
+            refreshTokenService.saveRefreshToken(authentication.getName(), refreshToken);
+            
+            addCookie(response, "access_token", accessToken, 60 * 30); // 30분 유지
+            addCookie(response, "refresh_token", refreshToken, 60 * 60 * 24); // 7일 유지
 
             return "redirect:/";
         } catch (BadCredentialsException e) {

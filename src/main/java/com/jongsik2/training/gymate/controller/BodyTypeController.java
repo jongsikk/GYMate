@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
+@RequestMapping
 @RequiredArgsConstructor
-@RequestMapping("/exercise-selection")
 public class BodyTypeController {
     private final BodyTypeService bodyTypeService;
 

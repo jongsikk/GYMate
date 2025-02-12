@@ -2,9 +2,10 @@ spring:
   security:
     oauth2:
       client:
-        google:
-          client-id: 405172535942-sc1t0tli99i1hh1po16ctoj8lcvpfmhn.apps.googleusercontent.com
-          client-secret: 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
-          scope:
-            - email
-            - profile
+        registration:
+          google:
+            client-id: 405172535942-sc1t0tli99i1hh1po16ctoj8lcvpfmhn.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile

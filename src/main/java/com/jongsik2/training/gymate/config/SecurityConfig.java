@@ -1,8 +1,8 @@
 package com.jongsik2.training.gymate.config;
 
-import com.jongsik2.training.gymate.security.CustomOAuth2UserService;
 import com.jongsik2.training.gymate.security.JwtAuthenticationFilter;
-import com.jongsik2.training.gymate.security.OAuth2LoginSuccessHandler;
+import com.jongsik2.training.gymate.security.oauth2.CustomOAuth2UserService;
+import com.jongsik2.training.gymate.security.oauth2.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

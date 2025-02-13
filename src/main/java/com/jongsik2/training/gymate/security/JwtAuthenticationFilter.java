@@ -52,13 +52,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 } else {
                     log.warn("Refresh Token이 유효하지 않음. 재로그인 필요");
                     SecurityContextHolder.clearContext();
-                    response.sendRedirect("/login?error=expired");
+                    response.sendRedirect("/login");
                     return;
                 }
             } else {
                 log.warn("Refresh Token이 만료됨. 재로그인 필요");
                 SecurityContextHolder.clearContext();
-                response.sendRedirect("/login?error=expired");
+                response.sendRedirect("/login");
                 return;
             }
         }
@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-    
+
     private String extractToken(HttpServletRequest request, String name) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {

@@ -1,4 +1,4 @@
-package com.jongsik2.training.gymate.security;
+package com.jongsik2.training.gymate.security.oauth2;
 
 import com.jongsik2.training.gymate.domain.User;
 import com.jongsik2.training.gymate.repository.UserRepository;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,21 +24,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = userRequest.getClientRegistration()
-                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        String email = extractEmail(registrationId, attributes);
+        String email = oAuth2UserInfo.getEmail();
 
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
-                            .username((String) attributes.get("name"))
+                            .username(oAuth2UserInfo.getName())
                             .password("")
                             .roleName("ROLE_USER")
                             .provider(registrationId)
-                            .providerId((String) attributes.get("sub"))
+                            .providerId(oAuth2UserInfo.getProviderId())
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
@@ -49,21 +46,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleName())),
-                attributes,
-                userNameAttributeName
+                oAuth2UserInfo.getAttributes(),
+                "email"
         );
-    }
-
-    private String extractEmail(String registrationId, Map<String, Object> attributes) {
-        if ("google".equals(registrationId)) {
-            return (String) attributes.get("email");
-        } else if ("kakao".equals(registrationId)) {
-            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-            return (String) kakaoAccount.get("email");
-        } else if ("naver".equals(registrationId)) {
-            Map<String, Object> naverAccount = (Map<String, Object>) attributes.get("response");
-            return (String) naverAccount.get("email");
-        }
-        return null;
     }
 }

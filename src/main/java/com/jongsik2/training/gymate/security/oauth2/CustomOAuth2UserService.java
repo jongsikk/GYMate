@@ -43,7 +43,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
-                    
+
                     return userRepository.save(newUser);
                 });
 
@@ -60,6 +60,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else if ("kakao".equals(registrationId)) {
             Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
             return (String) kakaoAccount.get("email");
+        } else if ("naver".equals(registrationId)) {
+            Map<String, Object> naverAccount = (Map<String, Object>) attributes.get("response");
+            return (String) naverAccount.get("email");
         }
         return null;
     }

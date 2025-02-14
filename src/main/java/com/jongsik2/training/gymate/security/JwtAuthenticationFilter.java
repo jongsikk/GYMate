@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,7 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken = extractToken(request, "refresh_token");
 
         if (accessToken != null && jwtUtil.validateToken(accessToken) == TokenStatus.VALID) {
-            authenticateUser(accessToken, request);
+            if (!authenticateUser(accessToken, request)) {
+                handleInvalidUser(response);
+                return;
+            }
         } else if (refreshToken != null) {
             log.info("Access Token이 만료됨, Refresh Token 확인 중");
 
@@ -38,27 +42,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtUtil.extractUsername(refreshToken);
 
                 if (refreshTokenService.isValidRefreshToken(email, refreshToken)) {
+                    // 새로운 Access Token 및 Refresh Token 발급
                     String newAccessToken = jwtUtil.generateAccessToken(email);
                     String newRefreshToken = jwtUtil.generateRefreshToken(email);
-
                     refreshTokenService.updateRefreshToken(email, newRefreshToken);
 
                     addCookie(response, "access_token", newAccessToken, 60 * 30); // 30분 유지
-                    addCookie(response, "refresh_token", newRefreshToken, 60 * 60 * 24); // 7일 유지
+                    addCookie(response, "refresh_token", newRefreshToken, 60 * 60 * 24 * 7); // 7일 유지
 
-                    authenticateUser(newAccessToken, request);
+                    if (!authenticateUser(newAccessToken, request)) {
+                        handleInvalidUser(response);
+                        return;
+                    }
 
                     log.info("새로운 Access Token 발급 완료");
                 } else {
                     log.warn("Refresh Token이 유효하지 않음. 재로그인 필요");
-                    SecurityContextHolder.clearContext();
-                    response.sendRedirect("/login");
+                    handleInvalidUser(response);
                     return;
                 }
             } else {
                 log.warn("Refresh Token이 만료됨. 재로그인 필요");
-                SecurityContextHolder.clearContext();
-                response.sendRedirect("/login");
+                handleInvalidUser(response);
                 return;
             }
         }
@@ -66,14 +71,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void authenticateUser(String token, HttpServletRequest request) {
+    private boolean authenticateUser(String token, HttpServletRequest request) {
         String email = jwtUtil.extractUsername(token);
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        try {
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return true;
+        } catch (UsernameNotFoundException e) {
+            return false;
+        }
     }
 
     private String extractToken(HttpServletRequest request, String name) {
@@ -95,4 +105,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
     }
+
+    private void removeCookie(HttpServletResponse response, String name) {
+        Cookie cookie = new Cookie(name, "");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
+    private void handleInvalidUser(HttpServletResponse response) throws IOException {
+        SecurityContextHolder.clearContext();
+        removeCookie(response, "access_token");
+        removeCookie(response, "refresh_token");
+        response.sendRedirect("/login");
+    }
 }
+

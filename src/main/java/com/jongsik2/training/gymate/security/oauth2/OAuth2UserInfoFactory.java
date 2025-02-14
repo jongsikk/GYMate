@@ -8,11 +8,9 @@ public class OAuth2UserInfoFactory {
             return new GoogleOAuth2UserInfo(attributes);
         } else if ("naver".equalsIgnoreCase(registrationId)) {
             return new NaverOAuth2UserInfo(attributes);
-        }
-//        else if ("kakao".equalsIgnoreCase(registrationId)) {
-//            return new KakaoOAuth2UserInfo(attributes);
-//        }
-        else {
+        } else if ("kakao".equalsIgnoreCase(registrationId)) {
+            return new KakaoOAuth2UserInfo(attributes);
+        } else {
             throw new IllegalArgumentException("지원하지 않는 OAuth2 제공자: " + registrationId);
         }
     }

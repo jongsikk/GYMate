@@ -1,5 +1,6 @@
 package com.jongsik2.training.gymate.config;
 
+import com.jongsik2.training.gymate.security.CustomLogoutSuccessHandler;
 import com.jongsik2.training.gymate.security.JwtAuthenticationFilter;
 import com.jongsik2.training.gymate.security.oauth2.CustomOAuth2UserService;
 import com.jongsik2.training.gymate.security.oauth2.OAuth2LoginSuccessHandler;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomLogoutSuccessHandler logoutSuccessHandler;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
@@ -43,21 +45,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(HeadersConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable);
+        http
+                .headers(HeadersConfigurer::disable);
+        http
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/", "/login", "/oauth2/**", "/signup", "/error", "/favicon.ico").permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
-                )
-                .formLogin(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                );
+        http
+                .formLogin(AbstractHttpConfigurer::disable);
+        http.logout(logout -> logout
+                .logoutUrl("/logout")  // 로그아웃 요청 URL
+                .logoutSuccessHandler(logoutSuccessHandler)
+                .invalidateHttpSession(true)
+                .deleteCookies("access_token", "refresh_token"));
+
+
+        http
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
                 .oauth2Login(oAuth2Login -> oAuth2Login
                         .loginPage("/login")
                         .userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                        .successHandler(oAuth2LoginSuccessHandler))
+                        .successHandler(oAuth2LoginSuccessHandler));
+        http
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

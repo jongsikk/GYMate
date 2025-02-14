@@ -4,10 +4,10 @@ import com.jongsik2.training.gymate.dto.ExerciseSelection;
 import com.jongsik2.training.gymate.dto.ExerciseSetting;
 import com.jongsik2.training.gymate.dto.LoginRequest;
 import com.jongsik2.training.gymate.dto.SignUpRequest;
+import com.jongsik2.training.gymate.security.CookieUtil;
 import com.jongsik2.training.gymate.security.JwtUtil;
 import com.jongsik2.training.gymate.security.RefreshTokenService;
 import com.jongsik2.training.gymate.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequiredArgsConstructor
 public class PageController {
-    private final JwtUtil jwtUtil;
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
@@ -52,13 +51,13 @@ public class PageController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
-            String accessToken = jwtUtil.generateAccessToken(loginRequest.getEmail());
-            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getEmail());
+            String accessToken = JwtUtil.generateAccessToken(loginRequest.getEmail());
+            String refreshToken = JwtUtil.generateRefreshToken(loginRequest.getEmail());
 
             refreshTokenService.saveRefreshToken(authentication.getName(), refreshToken);
-            
-            addCookie(response, "access_token", accessToken, 60 * 30); // 30분 유지
-            addCookie(response, "refresh_token", refreshToken, 60 * 60 * 24); // 7일 유지
+
+            CookieUtil.addCookie(response, "access_token", accessToken, 60 * 30); // 30분 유지
+            CookieUtil.addCookie(response, "refresh_token", refreshToken, 60 * 60 * 24); // 7일 유지
 
             return "redirect:/";
         } catch (BadCredentialsException e) {
@@ -87,14 +86,5 @@ public class PageController {
         log.info(exerciseSetting.getSets() + " " + exerciseSetting.getReps() + " " + exerciseSetting.getRestTime());
         model.addAttribute("setting", exerciseSetting);
         return "exercise";
-    }
-
-    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
     }
 }

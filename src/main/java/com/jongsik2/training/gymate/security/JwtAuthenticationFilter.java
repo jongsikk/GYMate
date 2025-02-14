@@ -21,7 +21,6 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -30,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = extractToken(request, "access_token");
         String refreshToken = extractToken(request, "refresh_token");
 
-        if (accessToken != null && jwtUtil.validateToken(accessToken) == TokenStatus.VALID) {
+        if (accessToken != null && JwtUtil.validateToken(accessToken) == TokenStatus.VALID) {
             if (!authenticateUser(accessToken, request)) {
                 handleInvalidUser(response);
                 return;
@@ -38,17 +37,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else if (refreshToken != null) {
             log.info("Access Token이 만료됨, Refresh Token 확인 중");
 
-            if (jwtUtil.validateToken(refreshToken) == TokenStatus.VALID) {
-                String email = jwtUtil.extractUsername(refreshToken);
+            if (JwtUtil.validateToken(refreshToken) == TokenStatus.VALID) {
+                String email = JwtUtil.extractUsername(refreshToken);
 
                 if (refreshTokenService.isValidRefreshToken(email, refreshToken)) {
                     // 새로운 Access Token 및 Refresh Token 발급
-                    String newAccessToken = jwtUtil.generateAccessToken(email);
-                    String newRefreshToken = jwtUtil.generateRefreshToken(email);
+                    String newAccessToken = JwtUtil.generateAccessToken(email);
+                    String newRefreshToken = JwtUtil.generateRefreshToken(email);
                     refreshTokenService.updateRefreshToken(email, newRefreshToken);
 
-                    addCookie(response, "access_token", newAccessToken, 60 * 30); // 30분 유지
-                    addCookie(response, "refresh_token", newRefreshToken, 60 * 60 * 24 * 7); // 7일 유지
+                    CookieUtil.addCookie(response, "access_token", newAccessToken, 60 * 30); // 30분 유지
+                    CookieUtil.addCookie(response, "refresh_token", newRefreshToken, 60 * 60 * 24 * 7); // 7일 유지
 
                     if (!authenticateUser(newAccessToken, request)) {
                         handleInvalidUser(response);
@@ -72,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean authenticateUser(String token, HttpServletRequest request) {
-        String email = jwtUtil.extractUsername(token);
+        String email = JwtUtil.extractUsername(token);
         try {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken authentication =
@@ -97,28 +96,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
-    }
-
-    private void removeCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }
-
     private void handleInvalidUser(HttpServletResponse response) throws IOException {
         SecurityContextHolder.clearContext();
-        removeCookie(response, "access_token");
-        removeCookie(response, "refresh_token");
+        CookieUtil.deleteCookie(response, "access_token");
+        CookieUtil.deleteCookie(response, "refresh_token");
         response.sendRedirect("/login");
     }
 }

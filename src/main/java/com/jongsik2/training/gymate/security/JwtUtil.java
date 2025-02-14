@@ -2,6 +2,7 @@ package com.jongsik2.training.gymate.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,20 +24,33 @@ public class JwtUtil {
     @Value("${jwt.issuer}")
     private String issuer;
     @Getter
-    private final String tokenType = "Bearer";
+    private static final String tokenType = "Bearer";
 
-    public String extractUsername(String token) {
+    private static String ACCESS_SECRET;
+    private static Long ACCESS_EXPIRATION;
+    private static Long REFRESH_EXPRIATION;
+    private static String ISSUER;
+
+    @PostConstruct
+    public void init() {
+        ACCESS_SECRET = this.accessSecret;
+        ACCESS_EXPIRATION = this.accessExpiration;
+        REFRESH_EXPRIATION = this.refreshExpiration;
+        ISSUER = this.issuer;
+    }
+
+    public static String extractUsername(String token) {
         return extractClaims(token).getSubject();
     }
 
-    public Date extractExpiration(String token) {
+    public static Date extractExpiration(String token) {
         return extractClaims(token).getExpiration();
     }
 
-    public Claims extractClaims(String token) {
+    public static Claims extractClaims(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(accessSecret.getBytes()))
+                    .setSigningKey(Keys.hmacShaKeyFor(ACCESS_SECRET.getBytes()))
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -45,28 +59,28 @@ public class JwtUtil {
         }
     }
 
-    public String generateAccessToken(String email) {
+    public static String generateAccessToken(String email) {
         return Jwts.builder()
                 .setHeader(createHeader())
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
-                .signWith(Keys.hmacShaKeyFor(accessSecret.getBytes()), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION))
+                .signWith(Keys.hmacShaKeyFor(ACCESS_SECRET.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public static String generateRefreshToken(String email) {
         return Jwts.builder()
                 .setHeader(createHeader())
-                .setIssuer(issuer)
+                .setIssuer(ISSUER)
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-                .signWith(Keys.hmacShaKeyFor(accessSecret.getBytes()), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPRIATION))
+                .signWith(Keys.hmacShaKeyFor(ACCESS_SECRET.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    private Map<String, Object> createHeader() {
+    private static Map<String, Object> createHeader() {
         Map<String, Object> header = new HashMap<>();
         header.put("typ", "JWT");
         header.put("alg", "HS256");
@@ -82,9 +96,9 @@ public class JwtUtil {
 //        return claims;
 //    }
 
-    public TokenStatus validateToken(String token) {
+    public static TokenStatus validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(accessSecret.getBytes())).build().parseClaimsJws(token); // 토큰 파싱하여 유효성 검증
+            Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(ACCESS_SECRET.getBytes())).build().parseClaimsJws(token); // 토큰 파싱하여 유효성 검증
             return TokenStatus.VALID;
         } catch (SecurityException e) {
             log.warn("Invalid JWT signature: {}", e.getMessage());

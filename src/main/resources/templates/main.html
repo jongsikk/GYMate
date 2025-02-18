@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>메인 화면</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
+<html lang="ko" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/layout}"
+      layout:fragment="content">
 <body>
-<div class="container mt-5">
-    <h2 class="text-center">운동 도우미</h2>
-    <div class="text-center">
-        <a href="/exercise-selection" class="btn btn-primary btn-lg">운동 시작</a>
+<div class="container">
+    <h1 class="text-center">운동 도우미</h1>
+    <div class="text-center mt-3">
+        <a href="/exercise-selection" class="btn-primary">운동 시작</a>
     </div>
 </div>
 </body>

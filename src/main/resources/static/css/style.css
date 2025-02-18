@@ -1,0 +1,101 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.header-container {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.navbar {
+    background-color: #343a40;
+    padding: 10px 20px;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-item {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 10px;
+}
+
+.nav-item:hover {
+    color: #17a2b8;
+}
+
+.container {
+    background-color: #f8f9fa;
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+.btn-primary {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 12px 24px;
+    border-radius: 5px;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+/* <a> 태그가 버튼처럼 동작하도록 변경 */
+.btn-primary[href] {
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+/* 푸터 스타일 */
+footer {
+    background: #343a40;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    width: 100%;
+    margin-top: auto;
+}

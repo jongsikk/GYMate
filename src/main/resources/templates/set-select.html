@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>세트 수 및 쉬는 시간 설정</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
+<html lang="ko" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/layout}"
+      layout:fragment="content">
 <body>
-<div class="container mt-5">
-    <h2 class="text-center">세트 수 및 쉬는 시간 설정</h2>
+<div class="container">
+    <h1 class="text-center">운동 도우미</h1>
     <form action="/start" method="post">
         <div class="form-group">
             <label for="sets">세트 수:</label>
@@ -32,7 +30,9 @@
                 <option value="300">5분</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">운동 시작</button>
+        <div class="text-center">
+            <button type="submit" class="btn-primary">운동 시작</button>
+        </div>
     </form>
 </div>
 </body>

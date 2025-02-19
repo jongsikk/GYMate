@@ -19,16 +19,24 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public Long register(SignUpRequest signUpRequest) {
-        log.info("password : " + bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
-        return userRepository.save(User.builder()
-                        .email(signUpRequest.getEmail())
-                        .username(signUpRequest.getUsername())
-                        .password(bCryptPasswordEncoder.encode(signUpRequest.getPassword()))
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .roleName("USER")
-                        .build())
-                .getId();
+    public boolean register(SignUpRequest signUpRequest) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            return false;
+        }
+        
+        try {
+            userRepository.save(User.builder()
+                    .email(signUpRequest.getEmail())
+                    .username(signUpRequest.getUsername())
+                    .password(bCryptPasswordEncoder.encode(signUpRequest.getPassword()))
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .roleName("USER")
+                    .build());
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

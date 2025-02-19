@@ -69,10 +69,15 @@ public class PageController {
 
     @PostMapping("/signup")
     public String doSignup(@ModelAttribute SignUpRequest signUpRequest, RedirectAttributes redirectAttributes) {
-        userService.register(signUpRequest);
-        redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다.");
+        boolean isSuccess = userService.register(signUpRequest);
 
-        return "redirect:/login";
+        if (isSuccess) {
+            redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다. 로그인해주세요.");
+            return "redirect:/login";
+        } else {
+            redirectAttributes.addFlashAttribute("message", "회원가입 실패. 다시 시도해주세요.");
+            return "redirect:/signup";
+        }
     }
 
     @PostMapping("/set-selection")

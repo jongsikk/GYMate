@@ -31,15 +31,11 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script>
+<script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function () {
-        // 서버에서 전달된 메시지가 있을 경우 alert로 표시
         const message = /*[[${message}]]*/ '';
         if (message) {
             alert(message);
-            setTimeout(() => {
-                window.location.href = "/login";
-            }, 100);
         }
     });
 </script>

@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 
@@ -42,14 +43,18 @@ public class WorkoutController {
     }
 
     @PostMapping("/save-workout")
-    public String saveWorkout(@ModelAttribute WorkoutRequest workoutRequest) {
+    public String saveWorkout(@ModelAttribute WorkoutRequest workoutRequest, RedirectAttributes redirectAttributes) {
         LocalDateTime workoutEndTime = LocalDateTime.now();
         for (SetRecordRequest s : workoutRequest.getSets()) {
             log.info(s.getReps() + " " + s.getWeight());
         }
         workoutRequest.setEndTime(workoutEndTime);
 
-        workoutSessionService.save(userService.getCurrentUser(), workoutRequest);
+        boolean isSuccess = workoutSessionService.save(userService.getCurrentUser(), workoutRequest);
+
+        if (isSuccess) {
+            redirectAttributes.addFlashAttribute("message", "운동 기록이 성공적으로 저장되었습니다.");
+        }
 
         return "redirect:/";
     }

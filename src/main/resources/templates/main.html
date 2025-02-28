@@ -11,3 +11,11 @@
 </div>
 </body>
 </html>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const message = /*[[${message}]]*/ '';
+        if (message) {
+            alert(message);
+        }
+    });
+</script>

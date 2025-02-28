@@ -2,12 +2,18 @@ package com.jongsik2.training.gymate.domain;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "workout_sessions")
 public class WorkoutSession {
     @Id
@@ -33,10 +39,4 @@ public class WorkoutSession {
 
     @Column(name = "total_rest_time")
     private int totalRestTime;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

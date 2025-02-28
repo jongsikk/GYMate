@@ -1,7 +1,5 @@
 package com.jongsik2.training.gymate.controller;
 
-import com.jongsik2.training.gymate.dto.ExerciseSelection;
-import com.jongsik2.training.gymate.dto.ExerciseSetting;
 import com.jongsik2.training.gymate.dto.LoginRequest;
 import com.jongsik2.training.gymate.dto.SignUpRequest;
 import com.jongsik2.training.gymate.security.CookieUtil;
@@ -78,18 +76,5 @@ public class PageController {
             redirectAttributes.addFlashAttribute("message", "회원가입 실패. 다시 시도해주세요.");
             return "redirect:/signup";
         }
-    }
-
-    @PostMapping("/set-selection")
-    public String setSelection(@ModelAttribute ExerciseSelection exerciseSelection, Model model) {
-        log.info(exerciseSelection.getExercise() + " " + exerciseSelection.getBodyType() + " " + exerciseSelection.getMuscleGroup());
-        return "set-select";
-    }
-
-    @PostMapping("/start")
-    public String startExercise(@ModelAttribute ExerciseSetting exerciseSetting, Model model) {
-        log.info(exerciseSetting.getSets() + " " + exerciseSetting.getReps() + " " + exerciseSetting.getRestTime());
-        model.addAttribute("setting", exerciseSetting);
-        return "exercise";
     }
 }

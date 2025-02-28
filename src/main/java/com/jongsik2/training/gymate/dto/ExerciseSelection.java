@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ExerciseSelection {
+    private Long exerciseId;
     private Long bodyType;
     private Long muscleGroup;
-    private Long exercise;
 }

@@ -1,10 +1,16 @@
 package com.jongsik2.training.gymate.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "set_record")
 public class SetRecord {
     @Id
@@ -18,10 +24,10 @@ public class SetRecord {
     @Column(name = "set_number")
     private int setNumber;
 
-    private int weight;
+    @Column(name = "workout_time")
+    private int workoutTime;
 
     private int reps;
 
-    @Column(name = "rest_time")
-    private int restTime;
+    private int weight;
 }

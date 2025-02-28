@@ -66,31 +66,6 @@ label {
     font-weight: bold;
 }
 
-.btn-primary {
-    display: inline-block;
-    background: #007bff;
-    color: white;
-    text-decoration: none;
-    font-size: 1.2rem;
-    padding: 12px 24px;
-    border-radius: 5px;
-    border: none;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-/* <a> 태그가 버튼처럼 동작하도록 변경 */
-.btn-primary[href] {
-    display: inline-block;
-    text-align: center;
-}
-
-.btn-primary:hover {
-    background: #0056b3;
-}
-
-/* 푸터 스타일 */
 footer {
     background: #343a40;
     color: white;

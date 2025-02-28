@@ -22,13 +22,13 @@
         </div>
 
         <div class="form-group" id="exerciseContainer">
-            <label for="exercise">운동:</label>
-            <select id="exercise" class="form-control" name="exercise">
+            <label for="exerciseId">운동:</label>
+            <select id="exerciseId" class="form-control" name="exerciseId">
                 <option value="">운동 선택</option>
             </select>
         </div>
         <div class="text-center">
-            <button class="btn-primary" id="submitBtn">제출</button>
+            <button class="btn btn-primary" id="submitBtn">제출</button>
         </div>
     </form>
 </div>
@@ -40,7 +40,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         const bodyTypeSelect = document.getElementById("bodyType");
         const muscleGroupSelect = document.getElementById("muscleGroup");
-        const exerciseSelect = document.getElementById("exercise");
+        const exerciseSelect = document.getElementById("exerciseId");
 
         const muscleGroupContainer = document.getElementById("muscleGroupContainer");
         const exerciseContainer = document.getElementById("exerciseContainer");

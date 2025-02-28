@@ -4,7 +4,7 @@
       layout:fragment="content">
 <body>
 <div class="container">
-    <h2 class="text-center">운동 타이머</h2>
+    <h2 class="text-center" th:text="${exercise.name}"></h2>
     <div class="text-center">
         <h3 id="timerDisplay">00:00</h3>
         <h5>남은 세트 수: <span id="remainingSets" th:text="${setting.sets}"></span></h5>
@@ -18,23 +18,44 @@
         <button id="pauseButton" class="btn btn-danger" style="display:none;">일시 정지</button>
         <button id="endRestButton" class="btn btn-warning" style="display:none;">쉬는 시간 종료</button>
     </div>
+    <div id="setInputContainer" class="text-center mt-4" style="display: none;">
+        <h5>세트 기록</h5>
+        <label for="setReps">반복 횟수:</label>
+        <input type="number" id="setReps" class="form-control" placeholder="반복 횟수 입력">
 
+        <label for="setWeight">무게 (kg):</label>
+        <input type="number" id="setWeight" class="form-control" placeholder="무게 입력">
+
+        <button id="confirmSetData" class="btn btn-success mt-2">기록 저장</button>
+    </div>
     <div class="mt-4">
         <h5>각 세트별 운동 시간:</h5>
         <ul id="setTimesList"></ul>
         <h5>총 운동 시간: <span id="totalWorkoutTime">00:00</span></h5>
+    </div>
+    <div class="text-center mt-4">
+        <form id="saveWorkoutForm" action="/save-workout" method="post">
+            <input type="hidden" name="exerciseId" th:value="${exercise.id}">
+            <input type="hidden" name="startTime" th:value="${workoutStartTime}">
+            <input type="hidden" name="totalWorkoutTime" id="totalWorkoutInput">
+            <input type="hidden" name="totalRestTime" id="totalRestTimeInput">
+
+            <div id="setRecordsContainer"></div>
+
+            <button type="submit" class="btn btn-primary" id="saveWorkoutButton" style="display: none">운동 저장</button>
+        </form>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let sets = parseInt(document.getElementById("remainingSets").textContent);
-        let reps = parseInt(document.getElementById("reps").textContent);
         let restTime = parseInt(document.getElementById("restTime").textContent);
         let currentSet = 1;
         let timerInterval;
         let timeElapsed = 0;
         let totalWorkoutTime = 0;
+        let totalRestTime = 0;
         let setTimes = [];
         let isPaused = false;
         let isResting = false;
@@ -45,6 +66,12 @@
         const pauseBtn = document.getElementById("pauseButton");
         const endRestBtn = document.getElementById("endRestButton");
         const resumeRestBtn = document.createElement("button");
+        const saveWorkoutBtn = document.getElementById("saveWorkoutButton");
+        const setInputContainer = document.getElementById("setInputContainer");
+        const setRepsInput = document.getElementById("setReps");
+        const setWeightInput = document.getElementById("setWeight");
+        const confirmSetDataBtn = document.getElementById("confirmSetData");
+
         resumeRestBtn.textContent = "쉬는 시간 시작";
         resumeRestBtn.classList.add("btn", "btn-info");
         resumeRestBtn.style.display = "none";
@@ -88,12 +115,32 @@
 
         endSetBtn.addEventListener("click", function () {
             clearInterval(timerInterval);
-            setTimes.push(timeElapsed);
             totalWorkoutTime += timeElapsed;
-            updateSetTimesList();
-            document.getElementById("currentSet").textContent = currentSet;
             endSetBtn.style.display = "none";
             pauseBtn.style.display = "none";
+            setInputContainer.style.display = "block";
+        });
+
+        confirmSetDataBtn.addEventListener("click", function () {
+            const reps = parseInt(setRepsInput.value);
+            const weight = parseInt(setWeightInput.value);
+
+            if (!reps || !weight) {
+                alert("횟수와 무게를 입력해주세요.");
+                return;
+            }
+
+            setTimes.push({
+                setNumber: currentSet,
+                workoutTime: timeElapsed,
+                reps: reps,
+                weight: weight
+            });
+
+            setInputContainer.style.display = "none";
+
+            updateSetTimesList();
+            document.getElementById("currentSet").textContent = currentSet;
             resetTimer();
 
             if (currentSet < sets) {
@@ -101,7 +148,31 @@
             } else {
                 alert("모든 세트가 완료되었습니다!");
                 document.getElementById("totalWorkoutTime").textContent = formatTime(totalWorkoutTime);
+                saveWorkoutBtn.style.display = "inline-block";
+                console.log(setTimes);
             }
+
+            setRepsInput.value = "";
+            setWeightInput.value = "";
+        });
+
+        saveWorkoutBtn.addEventListener("click", function () {
+            document.getElementById("totalWorkoutInput").value = totalWorkoutTime;
+            document.getElementById("totalRestTimeInput").value = totalRestTime;
+
+            const setRecordsContainer = document.getElementById("setRecordsContainer");
+            setRecordsContainer.innerHTML = "";
+
+            setTimes.forEach((set, index) => {
+                setRecordsContainer.innerHTML += `
+                    <input type="hidden" name="sets[${index}].setNumber" value="${set.setNumber}">
+                    <input type="hidden" name="sets[${index}].workoutTime" value="${set.workoutTime}">
+                    <input type="hidden" name="sets[${index}].reps" value="${set.reps}">
+                    <input type="hidden" name="sets[${index}].weight" value="${set.weight}">
+                `;
+            });
+
+            document.getElementById("saveWorkoutForm").submit();
         });
 
         endRestBtn.addEventListener("click", function () {
@@ -143,6 +214,7 @@
                     timeRemaining--;
                     updateTimerDisplay(timeRemaining);
                     remainingRestTime = timeRemaining;
+                    totalRestTime++;
                 } else {
                     clearInterval(timerInterval);
                     alert("쉬는 시간이 끝났습니다. 다음 운동을 시작하세요!");
@@ -166,11 +238,11 @@
         function updateSetTimesList() {
             let setTimesList = document.getElementById("setTimesList");
             setTimesList.innerHTML = "";
-            setTimes.forEach((time, index) => {
-                let minutes = Math.floor(time / 60).toString().padStart(2, "0");
-                let seconds = (time % 60).toString().padStart(2, "0");
+            setTimes.forEach((set, index) => {
+                let minutes = Math.floor(set.workoutTime / 60).toString().padStart(2, "0");
+                let seconds = (set.workoutTime % 60).toString().padStart(2, "0");
                 let listItem = document.createElement("li");
-                listItem.textContent = `세트 ${index + 1}: ${minutes}:${seconds}`;
+                listItem.textContent = `세트 ${index + 1}: ${minutes}:${seconds} ${set.weight}kg ${set.reps}reps`;
                 setTimesList.appendChild(listItem);
             });
 

@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class ExerciseSetting {
     private Long sets;
-    private Long reps;
     private Long restTime;
 }

@@ -6,7 +6,9 @@
     <div class="navbar">
         <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/}">Home</a>
         <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/workout-history}">History</a>
+        <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/ranking}">Ranking</a>
         <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/logout}">Logout</a>
+        <a class="nav-item" sec:authorize="isAnonymous()" th:href="@{/login}">Login</a>
     </div>
 </nav>
 </html>

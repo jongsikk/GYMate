@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/layout}"
+      layout:fragment="content">
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">이번 달 운동 랭킹</h2>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>순위</th>
+            <th>사용자</th>
+            <th>총 운동 시간</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ranking : ${rankings}">
+            <td th:text="${ranking.rank}"></td>
+            <td th:text="${ranking.username}"></td>
+            <td th:text="${ranking.totalWorkoutTime}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

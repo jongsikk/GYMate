@@ -3,6 +3,7 @@ package com.jongsik2.training.gymate.controller;
 import com.jongsik2.training.gymate.domain.User;
 import com.jongsik2.training.gymate.dto.*;
 import com.jongsik2.training.gymate.service.ExerciseService;
+import com.jongsik2.training.gymate.service.UserRankingService;
 import com.jongsik2.training.gymate.service.UserService;
 import com.jongsik2.training.gymate.service.WorkoutSessionService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.List;
 public class WorkoutController {
     private final UserService userService;
     private final ExerciseService exerciseService;
+    private final UserRankingService userRankingService;
     private final WorkoutSessionService workoutSessionService;
 
     @PostMapping("/set-selection")
@@ -80,5 +82,13 @@ public class WorkoutController {
         model.addAttribute("setRecords", setRecords);
 
         return "workout-detail";
+    }
+
+    @GetMapping("/ranking")
+    public String ranking(Model model) {
+        List<UserRankingResponse> rankings = userRankingService.getUserRanking();
+        model.addAttribute("rankings", rankings);
+        
+        return "ranking";
     }
 }

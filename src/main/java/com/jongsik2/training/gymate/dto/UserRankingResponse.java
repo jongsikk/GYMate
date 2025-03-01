@@ -12,5 +12,5 @@ import lombok.Setter;
 public class UserRankingResponse {
     private Long rank;
     private String username;
-    private Long totalWorkoutTime;
+    private String totalWorkoutTime;
 }

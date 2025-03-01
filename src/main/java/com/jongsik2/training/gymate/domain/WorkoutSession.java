@@ -1,6 +1,7 @@
 package com.jongsik2.training.gymate.domain;
 
 
+import com.jongsik2.training.gymate.dto.WorkoutSessionResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,4 +40,15 @@ public class WorkoutSession {
 
     @Column(name = "total_rest_time")
     private int totalRestTime;
+
+    public WorkoutSessionResponse toDto() {
+        return WorkoutSessionResponse.builder()
+                .id(this.getId())
+                .exerciseName(this.getExercise().getName())
+                .startTime(this.getStartTime())
+                .endTime(this.getEndTime())
+                .totalTime(this.getTotalTime())
+                .totalRestTime(this.getTotalRestTime())
+                .build();
+    }
 }

@@ -1,5 +1,6 @@
 package com.jongsik2.training.gymate.controller;
 
+import com.jongsik2.training.gymate.domain.User;
 import com.jongsik2.training.gymate.dto.*;
 import com.jongsik2.training.gymate.service.ExerciseService;
 import com.jongsik2.training.gymate.service.UserService;
@@ -8,12 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -56,6 +59,26 @@ public class WorkoutController {
             redirectAttributes.addFlashAttribute("message", "운동 기록이 성공적으로 저장되었습니다.");
         }
 
-        return "redirect:/";
+        return "redirect:/workout-history";
+    }
+
+    @GetMapping("/workout-history")
+    public String getWorkoutHistory(Model model) {
+        User currentUser = userService.getCurrentUser();
+        List<WorkoutSessionResponse> workoutSessions = workoutSessionService.getWorkoutHistoryByUserId(currentUser.getId());
+        model.addAttribute("workoutSessions", workoutSessions);
+
+        return "workout-history";
+    }
+
+    @GetMapping("/workout-history/{id}")
+    public String getWorkoutDetail(@PathVariable Long id, Model model) {
+        WorkoutSessionResponse workoutSession = workoutSessionService.getWorkoutSessionById(id);
+        List<SetRecordResponse> setRecords = workoutSessionService.getSetRecordsByWorkoutSession(id);
+
+        model.addAttribute("workoutSession", workoutSession);
+        model.addAttribute("setRecords", setRecords);
+
+        return "workout-detail";
     }
 }

@@ -1,5 +1,6 @@
 package com.jongsik2.training.gymate.domain;
 
+import com.jongsik2.training.gymate.dto.SetRecordResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,13 @@ public class SetRecord {
     private int reps;
 
     private int weight;
+
+    public SetRecordResponse toDto() {
+        return SetRecordResponse.builder()
+                .setNumber(this.setNumber)
+                .workoutTime(this.workoutTime)
+                .weight(this.weight)
+                .reps(this.reps)
+                .build();
+    }
 }

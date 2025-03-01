@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/layout}"
+      layout:fragment="content">
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">운동 기록</h2>
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>운동 이름</th>
+            <th>운동 시작</th>
+            <th>운동 종료</th>
+            <th>총 운동 시간</th>
+            <th>총 쉬는 시간</th>
+            <th>상세 보기</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="workoutSession : ${workoutSessions}">
+            <td th:text="${workoutSession.exerciseName}"></td>
+            <td th:text="${#temporals.format(workoutSession.startTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${#temporals.format(workoutSession.endTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${workoutSession.totalTime + ' 초'}"></td>
+            <td th:text="${workoutSession.totalRestTime + ' 초'}"></td>
+            <td>
+                <a th:href="@{/workout-history/{id}(id=${workoutSession.id})}" class="btn btn-info btn-sm">세부 정보</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const message = /*[[${message}]]*/ '';
+        if (message) {
+            alert(message);
+        }
+    });
+</script>

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="navbar">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="navbar">
 <nav>
     <div class="navbar">
-        <a class="nav-item" th:href="@{/}">Home</a>
-        <a class="nav-item" th:href="@{/logout}">Logout</a>
+        <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/}">Home</a>
+        <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/workout-history}">History</a>
+        <a class="nav-item" sec:authorize="isAuthenticated()" th:href="@{/logout}">Logout</a>
     </div>
 </nav>
 </html>

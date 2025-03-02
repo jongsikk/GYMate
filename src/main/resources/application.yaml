@@ -17,6 +17,7 @@ spring:
       data-locations: classpath*:data.sql
   profiles:
     include: oauth
+    active: prod
 
 jwt:
   access-secret: YWNjZXNzdG9rZW5zZWNyZXR0b2tlbmFjY2Vzcw==

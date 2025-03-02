@@ -57,7 +57,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             docker stop gymate-app || true
-            docker rm -f $(docker ps -q -f "name=gymate-app")
-            docker rmi $(docker images ${{ secrets.DOCKER_REPO }} -q)
+            docker rm gymate-app || true
+            docker rmi $(docker images ${{ secrets.DOCKER_REPO }} -q) || true
             docker pull ${{ secrets.DOCKER_REPO }}
             docker run -d --network host -p 8088 --name gymate-app ${{ secrets.DOCKER_REPO }}

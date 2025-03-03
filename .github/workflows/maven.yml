@@ -60,4 +60,4 @@ jobs:
             docker rm gymate-app || true
             docker rmi $(docker images ${{ secrets.DOCKER_REPO }} -q) || true
             docker pull ${{ secrets.DOCKER_REPO }}
-            docker run -d -p 8088 --name gymate-app ${{ secrets.DOCKER_REPO }}
+            docker run -d --network docker-network -p 8088 --name gymate-app ${{ secrets.DOCKER_REPO }}

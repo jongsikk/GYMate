@@ -1,6 +1,6 @@
 # GYMate
 
-[gymate.duckdns.org](gymate.duckdns.org)
+<a href="https://gymate.duckdns.org" target="_blank">gymate.duckdns.org</a>
 
 > **운동 기록 및 분석을 돕는 개인 맞춤형 운동 도우미 서비스**
 

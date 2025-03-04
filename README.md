@@ -1,5 +1,7 @@
 # GYMate
 
+[gymate.duckdns.org](gymate.duckdns.org)
+
 > **운동 기록 및 분석을 돕는 개인 맞춤형 운동 도우미 서비스**
 
 ## 프로젝트 소개

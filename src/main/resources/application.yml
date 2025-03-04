@@ -16,7 +16,7 @@ spring:
     init:
       data-locations: classpath*:data.sql
   profiles:
-    include: oauth, oauth-prod
+    include: oauth-${spring.profiles.active}
     active: prod
 
 jwt:

@@ -15,8 +15,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-  profiles:
-    include: oauth, oauth-dev
 
 server:
   port: 8080

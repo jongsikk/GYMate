@@ -1,0 +1,11 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: https://gymate.duckdns.org/login/oauth2/code/google
+          naver:
+            redirect-uri: https://gymate.duckdns.org/login/oauth2/code/naver
+          kakao:
+            redirect-uri: https://gymate.duckdns.org/login/oauth2/code/kakao
